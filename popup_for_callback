@@ -31,9 +31,31 @@ $(document).ready(function() {
 		$('.popup_callback, .overlay_callback').css('visibility','visible');
 		e.preventDefault();
 	});
+	$( "#callback_buton" ).click(function() {
+		$.ajax({
+		  type: "POST",
+		  url: "callback.php",
+		  data: "name="+$('#callback-username').val()+"&tel="+$('#callback-tel').val(),
+		  success: function(){
+			  $('.popup_callback, .overlay_callback').css('opacity','0');
+			  $('.popup_callback, .overlay_callback').css('visibility','hidden');
+			  alert( "Заявка отправлена." );
+		  }
+		});
+	});
 )};
 </script>
+<?php callbac.php>
+$recepient = "loktevra@gmail.com";
+$sitename = "moisport.ru";
 
+$name = trim($_POST["name"]);
+$phone = trim($_POST["tel"]);
+
+$pagetitle = "Новая заявка с сайта \"$sitename\"";
+$message = "Имя: $name \nТелефон: $phone";
+mail($recepient, $pagetitle, $message, "Content-type: text/plain; charset=\"utf-8\"\n From: $recepient");
+?>
 <style>
 .overlay_callback {
     background-color: rgba(0, 0, 0, 0.7);
