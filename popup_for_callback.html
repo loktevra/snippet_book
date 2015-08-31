@@ -1,62 +1,21 @@
-<body>
-<!-- <a class="callback">click her to show popup</a>-->
-
-
-<div class="overlay_callback" title="окно"></div>
-<div class="popup_callback">
-<div class="close_window_callback">x</div>
-	<form action="callback.php" method="post" id="callback-form">
-		<p id="form-callback-username">
-			<label for="callback-username">Ваше имя:</label>
-			<input id="callback-username" type="text" name="name" class="input_callback_box" size="18">
-		</p>
-		<p id="form-callback-tel">
-			<label for="callback-tel">Номер телефона:</label>
-			<input id="callback-tel" type="tel" name="tel" class="input_callback_box" size="18">
-		</p>
-		<br/>
-		<input type="submit" name="Submit" class="button" value="Заказать звонок">
-	</form>
-</div>
-</body>
-
-<script>
-$(document).ready(function() {
-	$('.popup_callback .close_window_callback, .overlay_callback').click(function (){
-		$('.popup_callback, .overlay_callback').css('opacity','0');
-		$('.popup_callback, .overlay_callback').css('visibility','hidden');
-		});
-		$('a.callback').click(function (e){
-		$('.popup_callback, .overlay_callback').css('opacity','1');
-		$('.popup_callback, .overlay_callback').css('visibility','visible');
-		e.preventDefault();
-	});
-	$( "#callback_buton" ).click(function() {
-		$.ajax({
-		  type: "POST",
-		  url: "callback.php",
-		  data: "name="+$('#callback-username').val()+"&tel="+$('#callback-tel').val(),
-		  success: function(){
-			  $('.popup_callback, .overlay_callback').css('opacity','0');
-			  $('.popup_callback, .overlay_callback').css('visibility','hidden');
-			  alert( "Заявка отправлена." );
-		  }
-		});
-	});
-)};
-</script>
-<?php callbac.php>
-$recepient = "loktevra@gmail.com";
-$sitename = "moisport.ru";
-
-$name = trim($_POST["name"]);
-$phone = trim($_POST["tel"]);
-
-$pagetitle = "Новая заявка с сайта \"$sitename\"";
-$message = "Имя: $name \nТелефон: $phone";
-mail($recepient, $pagetitle, $message, "Content-type: text/plain; charset=\"utf-8\"\n From: $recepient");
-?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Пример заказа звонкав попап</title>
 <style>
+/*фикс для символа рубля*/
+.style_for_fa {
+	position: absolute;
+	width: 26px;
+	height: 26px;
+	right: 20px;
+	top: 5px;
+	display: block;
+	color: white;
+}
+
+/*фиксы для модального окна заказа звонка*/
 .overlay_callback {
     background-color: rgba(0, 0, 0, 0.7);
     bottom: 0;
@@ -146,4 +105,61 @@ mail($recepient, $pagetitle, $message, "Content-type: text/plain; charset=\"utf-
     width: 96%;
     padding: 4px 6px; 
  }
+
 </style>
+</head>
+<body>
+<div class="callback" onClick="CallBackWindowShow()">Нажмите для заказа звонка</div>
+<!--  всплывающее окно заказать звонок -->
+<div id="overlay_callback" class="overlay_callback" title="окно" onClick="CallBackWindowHidden()"></div>
+<div id="popup_callback" class="popup_callback">
+	<div class="close_window_callback" onClick="CallBackWindowHidden()">x</div>
+	<form id="callback-form">
+		<p id="form-callback-username">
+			<label for="callback-username">Ваше имя:</label>
+			<input id="callback-username" type="text" name="name" class="input_callback_box" size="18">
+		</p>
+		<p id="form-callback-tel">
+			<label for="callback-tel">Номер телефона:</label>
+			<input id="callback-tel" type="tel" name="tel" class="input_callback_box" size="18">
+		</p>
+		<br/>
+		<input id="callback_button" type="button" name="Submit" class="button" value="Заказать звонок" onclick="CallbackButtonClick();">
+	</form>
+</div>
+
+<script type="text/javascript">
+function CallBackWindowShow() {
+	var popupCallback = document.getElementById("popup_callback");
+	var overlayCallback = document.getElementById("overlay_callback");
+	popupCallback.style.opacity ="1";
+	popupCallback.style.visibility = "visible";
+	overlayCallback.style.opacity ="1";
+	overlayCallback.style.visibility = "visible";	
+}
+
+function CallBackWindowHidden() {
+	var popupCallback = document.getElementById("popup_callback");
+	var overlayCallback = document.getElementById("overlay_callback");
+	popupCallback.style.opacity ="0";
+	popupCallback.style.visibility = "hidden";
+	overlayCallback.style.opacity ="0";
+	overlayCallback.style.visibility = "hidden";
+}
+
+function CallbackButtonClick() {
+	// отправляем через xhr
+	var form = new FormData();
+	form.append("name",document.getElementById("callback-username").value);
+	form.append("tel",document.getElementById("callback-tel").value);
+	var xhr = new XMLHttpRequest();
+	xhr.onload = function() {
+		CallBackWindowHidden();
+		alert( "Заявка отправлена." );
+	};
+	xhr.open("post", "callback.php", true);
+	xhr.send(form);
+}
+</script>
+</body>
+</html>
